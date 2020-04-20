@@ -1,0 +1,445 @@
+/** AUTHOR: Colin Meddaugh
+    COURSE: CPT 167
+    PURPOSE: Participation 6 submission.  This program is designed as a Vacation planning program that 
+             plans for a 5 day trip taking user input to plan out their trip and adds a count to
+             the number of total trips the program is used for.        
+    CREATEDATE: 04/16/2020
+*/
+
+package edu.cpt167.meddaugh.participation;
+
+import java.util.Scanner;
+
+public class SodNotZod6 
+{
+
+	//DECLARE AND INITIALIZE CONSTANTs
+	//
+	public static final String DISCOUNT_NAME_MEMBER = "MEMBER";
+	public static final String DISCOUNT_NAME_SENIOR = "SENIOR";
+	public static final String DISCOUNT_NAME_NONE = "NONE";
+	public static final double DISCOUNT_RATE_MEMBER = .15;
+	public static final double DISCOUNT_RATE_SENIOR = .25;
+	public static final double DISCOUNT_RATE_NONE = 0.0;
+	public static final String QUIT_NAME = "QUIT";
+	public static final String NAME_PREMIUM = "SHOVEL";
+	public static final String NAME_SPECIAL = "TOP SOIL";
+	public static final String NAME_BASIC = "SOD";
+	public static final double RATE_PREMIUM = 6.99;
+	public static final double RATE_SPECIAL = 4.99;
+	public static final double RATE_BASIC = 2.99;
+	public static final double TAX_RATE = .075;
+	public static final int MAX_PURCHASE_COUNT = 2;
+	public static final int RESET_VALUE = 0;
+	
+	//DECLARE MAIN
+	public static void main(String[] args) 
+	{
+		//Declare and initialize a Scanner object, named input
+		Scanner input = new Scanner(System.in);
+		//Variables
+		//
+		String userName = "";
+		String itemName = "";
+		char menuSelection = ' ';
+		char itemSelection = ' ';
+		double itemPrice = 0.0;
+		double discountAmt = 0.0;
+		double discountPrice = 0.0;
+		double discountRate = 0.0;
+		String discountName = "";
+		int howMany = 0;
+		double subTotal = 0.0;
+		double tax = 0.0;
+		double totalCost = 0.0;
+		int memberCount = 0;
+		int seniorCount = 0;
+		int noDiscountCount = 0;
+		int premiumCount = 0;
+		int specialCount = 0;
+		int basicCount = 0;
+		int purchaseCounter = 0;
+		double grandTotal = 0.0;
+	
+		//WELCOME BANNER
+		displayWelcomeBanner();
+		
+		//INPUT SECTION
+		userName = getuserName(input);
+			
+		//PRIME READ OF MAIN MENU
+		menuSelection = validateMainMenu(input);
+			
+		//RUN WHILE LOOP
+		while (menuSelection != 'Q')
+		{
+			//RUN PURCHASE COUNTER
+			while (purchaseCounter < MAX_PURCHASE_COUNT)
+			{
+			//get and validate itemSelection
+				itemSelection = validateItemMenu(input);
+				//HOW MANY
+				howMany = validateHowMany(input);
+				
+				//Processes Rate Selection
+				if(menuSelection == 'A')
+				{	
+					discountName = DISCOUNT_NAME_MEMBER;
+					discountRate = DISCOUNT_RATE_MEMBER;
+					memberCount++;
+				}//END OF IF
+				else if(menuSelection == 'B')
+				{
+					discountName = DISCOUNT_NAME_SENIOR;
+					discountRate = DISCOUNT_RATE_SENIOR;
+					seniorCount++;
+				}//END OF ELSE IF
+				else
+				{
+					discountName = DISCOUNT_NAME_NONE;
+					discountRate = DISCOUNT_RATE_NONE;
+					noDiscountCount++;
+				}//END OF ELSE
+		   	
+				//Processes Item Selection
+				if(itemSelection == 'A')
+				{
+					itemPrice = RATE_PREMIUM;
+					itemName = NAME_PREMIUM;
+					premiumCount++;
+				}//END OF IF
+				else if (itemSelection == 'B')
+				{
+					itemPrice = RATE_SPECIAL;
+					itemName = NAME_SPECIAL;
+					specialCount++;
+				}//END OF ELSE IF
+				else
+				{
+					itemPrice = RATE_BASIC;
+					itemName = NAME_BASIC;
+					basicCount++;
+				}//END OF ELSE
+	   	
+				//PROCESS
+				//
+				discountAmt = itemPrice * discountRate;
+				discountPrice = itemPrice - discountAmt;
+				subTotal = howMany * discountPrice;
+				tax = subTotal * TAX_RATE;
+				totalCost = totalCost + subTotal + tax;
+				grandTotal = grandTotal + totalCost;
+				
+				//Display Item Receipt 
+				displayItemReceipt(userName, itemName, itemPrice, discountName, discountPrice, howMany);
+				
+				//PURCHASE COUNTER
+				purchaseCounter++;
+		   	
+			}//END OF PURCHASE COUNTER WHILE
+			
+			//Display ORDER TOTAL
+			displayOrderTotal(subTotal, tax, totalCost);
+			
+			//RESET VALUES
+			totalCost = RESET_VALUE;
+			purchaseCounter = RESET_VALUE;
+			
+			//Modify LCV for MENU SELECTION
+			menuSelection = validateMainMenu(input);
+		}//END OF MENU SELCTION WHILE	
+		
+		//DISPLAY Grand Total if > 0.0
+		if (grandTotal > 0.0)
+		{
+			displayFinalReport(userName, memberCount, seniorCount, noDiscountCount, premiumCount, specialCount, basicCount, grandTotal);
+		}//END OF IF FINAL REPORT STRUCTURE
+			
+		//DISPLAY FAREWELL MESSAGE
+		displayFarewellMessage(userName);
+
+		//CLOSE SCANNER
+		input.close();
+
+	}//END OF MAIN METHOD
+			
+	//
+	// WELCOME BANNER 
+	//
+	public static void displayWelcomeBanner()
+	{
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		System.out.println("Welcome to SodNotZod's!");
+		System.out.println("This program will assist you in ringing up sales and");
+		System.out.println("having a great time doing it.");
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	}//END of Welcome Banner
+		
+	//GET THE USERNAME
+	public static String getuserName(Scanner borrowedInput)
+	{
+		String userName = "";
+		System.out.println("To get started what is your name?");
+		userName = borrowedInput.nextLine();
+		System.out.println("\nHello, " + userName + ".");
+		return userName;
+	}//END GET USERNAME
+		
+	//VALIDATE MAIN MENU
+	public static char validateMainMenu(Scanner borrowedInput)
+	{
+		char menuSelection = ' ';
+		//DISPLAY DISCOUNT MENU
+		System.out.println("***** ***** ***** ***** ***** *****");
+		System.out.println("DISCOUNT MENU");
+		System.out.println("***** ***** ***** ***** ***** *****");
+		//The following should print: 3 columns
+		//First: LEFT aligned with 6 minimum characters
+		//Second: LEFT aligned with 8 minimum characters
+		//Third: RIGHT aligned with 0 minimum characters & 2 decimals		
+		System.out.printf("%-6s%-8s%.2f\n", "[A]", DISCOUNT_NAME_MEMBER , DISCOUNT_RATE_MEMBER);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 6 minimum characters
+		//Second: LEFT aligned with 8 minimum characters
+		//Third: RIGHT aligned with 0 minimum characters & 2 decimals
+		System.out.printf("%-6s%-8s%.2f\n", "[B]", DISCOUNT_NAME_SENIOR , DISCOUNT_RATE_SENIOR);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 6 minimum characters
+		//Second: LEFT aligned with 8 minimum characters
+		//Third: RIGHT aligned with 0 minimum characters & 2 decimals
+		System.out.printf("%-6s%-8s%.2f\n", "[C]", DISCOUNT_NAME_NONE , DISCOUNT_RATE_NONE);
+		//The following should print: 2 columns
+		//First: LEFT aligned with 6 minimum characters
+		//Second: LEFT aligned with 8 minimum characters
+		System.out.printf("%-6s%-8s\n", "[Q]", QUIT_NAME);
+		System.out.println("***** ***** ***** ***** ***** *****");
+		System.out.println("Enter your selection here: ");		
+		//PRIME Read for Selection
+		menuSelection = borrowedInput.next().toUpperCase().charAt(0);
+			
+		//Test input using a Validation Loop for invalid Character
+		while (menuSelection != 'A' && menuSelection != 'B' && menuSelection != 'C' && menuSelection != 'Q') 
+		{
+			System.out.println("~~~Invalid Selection!~~~");
+			//Discount Menu
+			System.out.println("***** ***** ***** ***** ***** *****");
+			System.out.println("DISCOUNT MENU");
+			System.out.println("***** ***** ***** ***** ***** *****");
+			//The following should print: 3 columns
+			//First: LEFT aligned with 6 minimum characters
+			//Second: LEFT aligned with 8 minimum characters
+			//Third: RIGHT aligned with 0 minimum characters & 2 decimals			
+			System.out.printf("%-6s%-8s%.2f\n", "[A]", DISCOUNT_NAME_MEMBER , DISCOUNT_RATE_MEMBER);
+			//The following should print: 3 columns
+			//First: LEFT aligned with 6 minimum characters
+			//Second: LEFT aligned with 8 minimum characters
+			//Third: RIGHT aligned with 0 minimum characters & 2 decimals			
+			System.out.printf("%-6s%-8s%.2f\n", "[B]", DISCOUNT_NAME_SENIOR , DISCOUNT_RATE_SENIOR);
+			//The following should print: 3 columns
+			//First: LEFT aligned with 6 minimum characters
+			//Second: LEFT aligned with 8 minimum characters
+			//Third: RIGHT aligned with 0 minimum characters & 2 decimals			
+			System.out.printf("%-6s%-8s%.2f\n", "[C]", DISCOUNT_NAME_NONE , DISCOUNT_RATE_NONE);
+			//The following should print: 2 columns
+			//First: LEFT aligned with 6 minimum characters
+			//Second: LEFT aligned with 8 minimum characters
+			System.out.printf("%-6s%-8s\n", "[Q]", QUIT_NAME);
+			System.out.println("***** ***** ***** ***** ***** *****");
+			System.out.println("Enter your selection here: ");
+			//Update Read for the selection - modifies LCV
+			menuSelection = borrowedInput.next().toUpperCase().charAt(0);
+		}//END of Validation Loop
+		return menuSelection;
+	}//End of Validate Main menu Loop		
+		
+	//Validation of ITEM MENU
+	public static char validateItemMenu(Scanner borrowedInput)
+	{
+		char itemSelection = ' ';
+		//ITEM Selection Menu
+		System.out.println("***** ***** ***** ***** ***** *****");
+		System.out.println("ITEM SELECTION");
+		System.out.println("***** ***** ***** ***** ***** *****");
+		//The following should print: 3 columns
+		//First: LEFT aligned with 6 minimum characters
+		//Second: LEFT aligned with 10 minimum characters
+		//Third: RIGHT aligned with 5 minimum characters & 2 decimals
+		System.out.printf("%-6s%-10s%s%5.2f\n", "A for", NAME_PREMIUM, "$", RATE_PREMIUM);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 6 minimum characters
+		//Second: LEFT aligned with 10 minimum characters
+		//Third: RIGHT aligned with 5 minimum characters & 2 decimals		
+		System.out.printf("%-6s%-10s%s%5.2f\n", "B for", NAME_SPECIAL, "$",  RATE_SPECIAL);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 6 minimum characters
+		//Second: LEFT aligned with 10 minimum characters
+		//Third: RIGHT aligned with 5 minimum characters & 2 decimals		
+		System.out.printf("%-6s%-10s%s%5.2f\n", "C for", NAME_BASIC, "$", RATE_BASIC);
+		System.out.println("***** ***** ***** ***** ***** *****");
+		System.out.print("Enter your selection here: ");
+		itemSelection = borrowedInput.next().toUpperCase().charAt(0);
+		
+		//Test for input for invalid character using the Validation Loop
+		while (itemSelection != 'A' && itemSelection != 'B' &&  itemSelection != 'C' && itemSelection != 'Q') 
+		{
+			System.out.println("~~~Invalid Selection!~~~");
+			//Combination Menu
+			System.out.println("***** ***** ***** ***** ***** *****");
+			System.out.println("ITEM SELECTION");
+			System.out.println("***** ***** ***** ***** ***** *****");
+			//The following should print: 3 columns
+			//First: LEFT aligned with 6 minimum characters
+			//Second: LEFT aligned with 10 minimum characters
+			//Third: RIGHT aligned with 5 minimum characters & 2 decimals			
+			System.out.printf("%-6s%-10s%s%5.2f\n", "A for", NAME_PREMIUM, "$", RATE_PREMIUM);
+			//The following should print: 3 columns
+			//First: LEFT aligned with 6 minimum characters
+			//Second: LEFT aligned with 10 minimum characters
+			//Third: RIGHT aligned with 5 minimum characters & 2 decimals			
+			System.out.printf("%-6s%-10s%s%5.2f\n", "B for", NAME_SPECIAL, "$", RATE_SPECIAL);
+			//The following should print: 3 columns
+			//First: LEFT aligned with 6 minimum characters
+			//Second: LEFT aligned with 10 minimum characters
+			//Third: RIGHT aligned with 5 minimum characters & 2 decimals			
+			System.out.printf("%-6s%-10s%s%5.2f\n", "C for", NAME_BASIC, "$", RATE_BASIC);
+			System.out.println("***** ***** ***** ***** ***** *****");
+			System.out.print("Enter your selection here: ");
+			//Update Read for the selection - modifies LCV
+			itemSelection = borrowedInput.next().toUpperCase().charAt(0);
+		}//END of Validation Loop
+		return itemSelection;
+	}//END OF VALIDATE ITEM MENU
+	
+	//VALIDATE HOW MANY
+	public static int validateHowMany(Scanner borrowedInput)
+	{
+		int howMany = 0;
+		//HOW MANY
+		System.out.println("How many would you like to purchase?");
+		howMany = borrowedInput.nextInt();
+		//VALIDATION LOOP
+		while (howMany <=0) 
+		{
+			System.out.println("---Invalid Selection!---");
+			//HOW MANY
+			System.out.println("How many would you like to purchase?");
+			howMany = borrowedInput.nextInt();
+		}//END OF WHILE
+		return howMany;
+	}//END VALIDATE HOW MANY
+	
+	//DISPLAY ITEM RECEIPT
+	public static void displayItemReceipt(String borrowedUserName, String borrowedItemName, double borrowedItemPrice, String borrowedDiscountName, double borrowedDiscountPrice, int borrowedHowMany)
+	{
+	//
+	//OUTPUT DISPLAY RECEIPT
+		System.out.println("\n***** ***** ***** ***** ***** *****");
+		System.out.println("Thank you for shopping with us "  + borrowedUserName + "!");
+		System.out.println("***** ***** ***** ***** ***** *****");
+		System.out.println("ORDER RECEIPT");
+		System.out.println("***** ***** ***** ***** ***** *****");
+		//The following should print: 2 columns
+		//First: LEFT aligned with 10 minimum characters
+		//Second: LEFT aligned with 22 minimum characters
+		System.out.printf("%-10s%22s\n", "Item Name:",  borrowedItemName);
+		//The following should print: 2 columns
+		//First: LEFT aligned with 10 minimum characters
+		//Second: RIGHT aligned with 12 minimum characters
+		//Third: RIGHT aligned with 8 minimum characters  & 2 decimal spaces
+		System.out.printf("%-10s %12s%8.2f\n", "Item Price:", "$", borrowedItemPrice);
+		//The following should print: 2 columns
+		//First: LEFT aligned with 10 minimum characters
+		//Second: RIGHT aligned with 18 minimum characters
+		System.out.printf("%-10s%18s\n", "Discount Name:", borrowedDiscountName);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 10 minimum characters
+		//Second: RIGHT aligned with 8 minimum characters
+		//Third: RIGHT aligned with 8 minimum characters  & 2 decimal spaces
+		System.out.printf("%-10s %8s%8.2f\n", "Discount Price:", "$", borrowedDiscountPrice);
+		//First: LEFT aligned with 10 minimum characters
+		//Second: RIGHT aligned with 22 minimum characters
+		System.out.printf("%-10s%22d\n", "Quantity: " , borrowedHowMany);
+		System.out.println("***** ***** ***** ***** ***** *****");
+	}//END OF RECEIPT
+
+	//DISPLAY THE ORDER TOTAL
+	public static void displayOrderTotal(double borrowedsubTotal, double borrowedtax, double borrowedtotalCost)
+	{
+		//Display the Order Total Receipt
+		System.out.println("-------------------------------------------");
+		System.out.println("ORDER TOTAL");	
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: RIGHT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8.2f\n" , "Subtotal: " ,"$" , borrowedsubTotal);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: LEFT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8.2f\n" , "Tax: " , "$" , borrowedtax);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: LEFT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8.2f\n" , "Total Cost: " , "$" , borrowedtotalCost);
+		System.out.println("-------------------------------------------");
+	}//End OF ORDER TOTAL RECEIPT
+	
+	//DISPLAY the FINAL REPORT
+	public static void displayFinalReport (String borrowedUserName, int borrowedMemberCount, int borrowedSeniorCount, int borrowedNoDiscountCount, int borrowedPremiumCount, int borrowedSpecialCount, int borrowedBasicCount, double borrowedGrandTotal)
+	{
+		//DISPLAY the FINAL Report
+		System.out.println("FINAL REPORT");
+		System.out.println("***** ***** ***** ***** ***** *****");
+		//The following should print: 2 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: RIGHT aligned with 10 minimum characters
+		System.out.printf("%-20s%10s\n", "User Name", "", borrowedUserName);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: LEFT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8d\n", "Member Count", "", borrowedMemberCount);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: LEFT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8d\n", "Senior Count", "", borrowedSeniorCount);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: LEFT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8d\n", "No Discount Count", "", borrowedNoDiscountCount);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: LEFT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8d\n", "Premium Count", "", borrowedPremiumCount);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: LEFT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8d\n", "Special Count", "", borrowedSpecialCount);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 2 minimum characters
+		//Third: LEFT aligned with 8 minimum characters
+		System.out.printf("%-20s%-2s%8d\n", "Basic Count", "", borrowedBasicCount);
+		//The following should print: 3 columns
+		//First: LEFT aligned with 20 minimum characters
+		//Second: LEFT aligned with 5 minimum characters
+		//Third: LEFT aligned with 8 minimum characters & 2 decimal spaces times
+		System.out.printf("%-20s%-5s%-8.2f\n", "Grand Total Sales","$", borrowedGrandTotal);
+		System.out.println("***** ***** ***** ***** ***** *****");
+	}//END OF FINAL REPORT
+		
+	//FARWELL MESSAGE
+	public static void displayFarewellMessage(String borrowedUserName)
+	{
+		//FAREWELL MESSAGE
+		System.out.println("Thank you " + borrowedUserName + ", for using our program. ");
+		System.out.println("Have a great day and visit us again soon!");
+	}//END OF FAREWELL MESSAGE
+
+}//END of class	
